@@ -6,7 +6,7 @@ Easily integrate PHP application with parsian bank payment.
 
 # Installation
 ``` bash
-$ composer require dpsoft/parsian
+$ composer require dpsoft/parsian-payment
 ```
 
 # Implementation

@@ -1,7 +1,7 @@
 {
     "name": "dpsoft/parsian-payment",
     "description": "Parsian bank payment",
-    "license": "GPL-3.0-only / GPL-3.0-or-later",
+    "license": "GPL-3.0-only",
     "authors": [
         {
             "name": "DaneshPajouhan",

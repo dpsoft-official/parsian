@@ -1,5 +1,5 @@
 {
-    "name": "dpsoft/parsian",
+    "name": "dpsoft/parsianPayment",
     "description": "Parsian bank payment",
     "type": "library",
     "license": "GPL-3.0-only / GPL-3.0-or-later",

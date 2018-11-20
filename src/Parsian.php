@@ -91,7 +91,7 @@ class Parsian
             if ($token > 0 and $status === 0) {
                 $this->token = $token;
 
-                return compact('token', 'orderId');
+                return compact('token', 'orderId', 'amount');
             }
 
             throw new ParsianException((int)$status);
@@ -134,6 +134,10 @@ class Parsian
             throw new \Exception('status برگشتی از بانک نامعتبر می باشد.');
         }
 
+        if(!$_POST['RRN'] || !$_POST['Amount'] && $_POST['status'] != 0)
+        {
+            throw new ParsianException($_POST['status']);
+        }
         $args = array(
             'Token' => array(
                 'filter' => FILTER_VALIDATE_INT,
@@ -143,7 +147,6 @@ class Parsian
                 'flags' => FILTER_REQUIRE_SCALAR,
             ),
             'Amount' => array(
-                'filter' => FILTER_VALIDATE_INT,
                 'flags' => FILTER_REQUIRE_SCALAR,
                 'options' => array('min_range' => 1000),
             ),
@@ -153,6 +156,7 @@ class Parsian
         );
 
         $filters = filter_var_array($_POST, $args);
+
         if (is_array($filters)) {
             foreach ($filters as $key => $value) {
                 if ($value === false || $value == null || empty($value)) {
@@ -164,11 +168,7 @@ class Parsian
         $gateToken = $_POST["Token"];
         $status = $_POST["status"];
         $RRN = $_POST["RRN"];
-        $gateAmount = $_POST["Amount"];
-
-        if ($_POST["TerminalNo"] != $this->pin) {
-            throw new ParsianException(-2);
-        }
+        $gateAmount = str_replace(',', '', $_POST["Amount"]);
 
         if ($status != 0 || !$RRN) {
             throw new ParsianException($status);
@@ -190,22 +190,21 @@ class Parsian
         $client = $this->client ?? new SoapClient(self::CONFIRM_URL);
         $result = $client->ConfirmPayment(['requestData' => $params]);
 
-
         if (empty($result) || !isset($result->ConfirmPaymentResult->Status)) {
             throw new ParsianException(-4);
         }
 
-        $status = !empty($result->ConfirmPaymentResult) ? $result->ConfirmPaymentResult->Status : null;
+        $status = isset($result->ConfirmPaymentResult->Status) ? $result->ConfirmPaymentResult->Status : null;
 
         if ($status != 0 || !$RRN) {
             throw new ParsianException($status);
         }
 
-        return $response = array(
+        return array(
             'Token' => $token,
             'status' => $status,
             'OrderId' => $_POST["OrderId"],
-            'TerminalNo' => $this->pin,
+            'TerminalNo' => $_POST["TerminalNo"],
             'RRN' => $RRN,
             'HashCardNumber' => $_POST["HashCardNumber"],
             'Amount' => $amount,
@@ -215,13 +214,12 @@ class Parsian
     /**
      * Reverse transaction
      *
-     * @param int $token
+     * @param string $token
      * @return bool
      *
      * @throws ParsianException
-     * @throws \SoapFault
      */
-    public function reverse(int $token)
+    public function reverse(string $token)
     {
         $params = array(
             'LoginAccount' => $this->pin,
@@ -231,7 +229,6 @@ class Parsian
         if ($token <= 0) {
             throw new ParsianException(-2);
         }
-
         $client = $this->client ?? new SoapClient(self::REVERSE_URL);
         $result = $client->ReversalRequest(['requestData' => $params]);
 

@@ -34,7 +34,7 @@ try{
      * $orderId = $response['orderId'];
      *     
      */
-    $response = $parsian->payRequest($amount, $callbackUrl, $orderId, $additionalData);
+    $response = $parsian->request($amount, $callbackUrl, $orderId, $additionalData);
     
     /**
      * Redirect user to payment gateway
@@ -66,18 +66,14 @@ try{
         $parsian = new Parsian($pin);
 	
         /**
-          * @var $token (required) Your transaction token you need to verify
-          * @var $amount (required) Your consider amount for compare with payment amount
           * 
           * @method $verify return array of  transaction data.
-          * $token = $response['Token'];
-          * $orderId = $response['OrderId'];
-          * $terminalNo = $response['TerminalNo'];
+          * $token = $response['token'];
+          * $orderId = $response['order_id'];
           * $RRN = $response['RRN'];
-          * $hashCardNumber = $response['HashCardNumber'];
-          * $amount = $response['Amount'];
+          * $hashCardNumber = $response['hash_card_number'];
           */
-        $response = $parsian->verify($token, $amount);
+        $response = $parsian->verify();
         
         echo "Successful payment ...";
 }catch (\Throwable $exception){

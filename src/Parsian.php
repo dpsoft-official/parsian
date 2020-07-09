@@ -96,7 +96,6 @@ class Parsian
     public function redirect()
     {
         header("Location: ".$this->getPaymentUrl());
-        exit ();
     }
 
     /**

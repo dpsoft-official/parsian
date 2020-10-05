@@ -38,7 +38,7 @@ class Parsian
     /**
      * @var \SoapClient
      */
-    private $client;
+    protected $client;
 
     /**
      * @param  string  $pin

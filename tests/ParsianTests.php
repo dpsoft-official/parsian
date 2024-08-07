@@ -46,7 +46,7 @@ class ParsianTests extends Base
         $this->assertTrue($this->parsian->reverse('123456789'));
     }
 
-    public function setUp()
+    public function setUp():void
     {
         $this->parsian = new Parsian('123456789');
     }
